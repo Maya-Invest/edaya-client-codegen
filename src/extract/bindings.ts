@@ -1,3 +1,4 @@
+import { createEmptyClientBindingsDocument } from '../contract/bindings'
 import {
 	CLIENT_BINDINGS_OPENAPI_EXTENSION,
 	CLIENT_ROUTE_NAMESPACES,
@@ -16,18 +17,16 @@ import {
 	X_EDAYA_REQUEST_SCHEMA,
 	X_EDAYA_RESPONSE_IS_ARRAY,
 	X_EDAYA_RESPONSE_SCHEMA,
-	createEmptyClientBindingsDocument,
-} from './types.ts'
+} from '../contract/extensions'
 import type {
 	ClientBindingsDocument,
 	ClientCommandBinding,
 	ClientEntityBinding,
 	ClientNamespaceRouteBinding,
 	ClientQueryBinding,
-	ClientRouteNamespace,
-	OpenApiDocument,
-	OpenApiOperation,
-} from './types.ts'
+} from '../contract/bindings'
+import type { ClientRouteNamespace } from '../contract/extensions'
+import type { OpenApiDocument, OpenApiOperation } from '../openapi/types'
 
 const HTTP_METHODS = ['get', 'post', 'put', 'patch', 'delete'] as const
 

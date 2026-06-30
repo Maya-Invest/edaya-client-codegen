@@ -1,8 +1,8 @@
 import { mkdirSync, writeFileSync } from 'node:fs'
 import { dirname } from 'node:path'
 import openapiTS, { astToString, type OpenAPI3 } from 'openapi-typescript'
-import { loadOpenApi } from './load-openapi.ts'
-import type { OpenApiDocument } from './types.ts'
+import { loadOpenApi } from '../openapi/load'
+import type { OpenApiDocument } from '../openapi/types'
 
 export async function generateSchemaTypeScript(
 	input: string | OpenApiDocument,

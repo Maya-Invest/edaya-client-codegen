@@ -1,6 +1,6 @@
 import { existsSync, readFileSync } from 'node:fs'
 import { relative } from 'node:path'
-import type { GeneratedArtifact } from './types.ts'
+import type { GeneratedArtifact } from './types'
 
 function filesMatch(generated: string, tracked: string): boolean {
 	return existsSync(generated)

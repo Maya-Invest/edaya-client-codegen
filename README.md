@@ -4,10 +4,10 @@ Generate Edaya API client artifacts from an OpenAPI document **only** — no dep
 
 ## Install
 
-Consumers pin a release tag from GitHub (no sibling checkout required):
+Consumers pin the `dev` branch from GitHub (no sibling checkout required):
 
 ```json
-"@edaya/client-codegen": "github:softilab/edaya-client-codegen#v0.0.1"
+"@edaya/client-codegen": "github:Maya-Invest/edaya-client-codegen#dev"
 ```
 
 ```sh
@@ -36,16 +36,14 @@ Remove the override before opening a PR — CI resolves the git dependency only.
 
 ## Releases
 
-Tag semver releases on GitHub; consumer repos pin the tag in `package.json`:
+For stable consumer installs, tag semver releases and pin the tag instead of `#dev`:
 
 ```sh
 git tag v0.0.1 && git push origin v0.0.1
 ```
 
-Then bump the ref in `edaya`, `edaya_web`, and any other consumers:
-
 ```json
-"@edaya/client-codegen": "github:softilab/edaya-client-codegen#v0.0.1"
+"@edaya/client-codegen": "github:Maya-Invest/edaya-client-codegen#v0.0.1"
 ```
 
 ## CLI

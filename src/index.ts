@@ -16,27 +16,32 @@ export {
 	X_EDAYA_REQUEST_SCHEMA,
 	X_EDAYA_RESPONSE_IS_ARRAY,
 	X_EDAYA_RESPONSE_SCHEMA,
-} from './types.ts'
+} from './contract/extensions'
 export type {
-	CheckArtifactsOptions,
 	ClientAuthorizationBinding,
 	ClientBindingsDocument,
 	ClientCommandBinding,
 	ClientEntityBinding,
 	ClientNamespaceRouteBinding,
 	ClientQueryBinding,
-	ClientRouteNamespace,
+} from './contract/bindings'
+export type { ClientRouteNamespace } from './contract/extensions'
+export type {
+	CheckArtifactsOptions,
 	GenerateArtifactsOptions,
 	GeneratedArtifact,
+} from './pipeline/types'
+export type {
 	LoadOpenApiOptions,
 	OpenApiDocument,
 	OpenApiOperation,
 	OpenApiPathItem,
-} from './types.ts'
-export { findDriftedArtifacts } from './drift.ts'
-export { formatClientBindingsTypeScript, writeClientBindingsTypeScript } from './emit-bindings.ts'
-export { formatCreateClientTypeScript, writeCreateClientTypeScript } from './emit-client.ts'
-export { generateSchemaTypeScript } from './emit-schema.ts'
-export { extractClientBindingsFromOpenApi } from './extract-bindings.ts'
-export { checkClientArtifacts, generateClientArtifacts, writeOpenApiSnapshot } from './generate.ts'
-export { isOpenApiUrl, loadOpenApi, resolveOpenApiSource } from './load-openapi.ts'
+} from './openapi/types'
+export { findDriftedArtifacts } from './pipeline/drift'
+export { formatClientBindingsTypeScript, writeClientBindingsTypeScript } from './emit/bindings'
+export { formatCreateClientTypeScript, writeCreateClientTypeScript } from './emit/client'
+export { generateSchemaTypeScript } from './emit/schema'
+export { extractClientBindingsFromOpenApi } from './extract/bindings'
+export { checkClientArtifacts, writeOpenApiSnapshot } from './pipeline/check'
+export { generateClientArtifacts } from './pipeline/generate'
+export { isOpenApiUrl, loadOpenApi, resolveOpenApiSource } from './openapi/load'

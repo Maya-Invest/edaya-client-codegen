@@ -4,19 +4,23 @@
 	"version": "0.0.1",
 	"repository": {
 		"type": "git",
-		"url": "https://github.com/softilab/edaya-client-codegen.git"
+		"url": "https://github.com/Maya-Invest/edaya-client-codegen.git"
 	},
 	"exports": {
 		".": {
 			"types": "./src/index.ts",
 			"import": "./src/index.ts"
+		},
+		"./contract": {
+			"types": "./src/contract/index.ts",
+			"import": "./src/contract/index.ts"
 		}
 	},
 	"bin": {
-		"edaya-codegen": "./src/cli.ts"
+		"edaya-codegen": "./bin/edaya-codegen.ts"
 	},
 	"scripts": {
-		"test": "bun test src --dots",
+		"test": "bun test test --dots",
 		"check": "tsc --noEmit",
 		"quality": "bun run check && bun run test"
 	},

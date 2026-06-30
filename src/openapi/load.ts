@@ -1,6 +1,6 @@
 import { readFileSync } from 'node:fs'
 import { resolve } from 'node:path'
-import type { LoadOpenApiOptions, OpenApiDocument } from './types.ts'
+import type { LoadOpenApiOptions, OpenApiDocument } from './types'
 
 export function isOpenApiUrl(input: string): boolean {
 	try {

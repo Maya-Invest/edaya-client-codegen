@@ -1,10 +1,8 @@
 import { resolve } from 'node:path'
 import { describe, expect, it } from 'bun:test'
-import {
-	extractClientBindingsFromOpenApi,
-} from './extract-bindings.ts'
-import { loadOpenApi } from './load-openapi.ts'
-import { X_EDAYA_KIND } from './types.ts'
+import { X_EDAYA_KIND } from '../src/contract/extensions'
+import { extractClientBindingsFromOpenApi } from '../src/extract/bindings'
+import { loadOpenApi } from '../src/openapi/load'
 
 const fixturePath = resolve(
 	import.meta.dirname,

@@ -1,37 +1,13 @@
 import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { dirname, join } from 'node:path'
-import { findDriftedArtifacts } from './drift.ts'
-import { writeClientBindingsTypeScript } from './emit-bindings.ts'
-import { writeCreateClientTypeScript } from './emit-client.ts'
-import { generateSchemaTypeScript } from './emit-schema.ts'
-import { extractClientBindingsFromOpenApi } from './extract-bindings.ts'
-import { loadOpenApi } from './load-openapi.ts'
-import type { CheckArtifactsOptions, GenerateArtifactsOptions } from './types.ts'
-
-export async function generateClientArtifacts(
-	options: GenerateArtifactsOptions,
-): Promise<void> {
-	const openApi = await loadOpenApi(options.input, { headers: options.headers })
-
-	if (options.bindingsOut) {
-		const bindings = extractClientBindingsFromOpenApi(openApi)
-		writeClientBindingsTypeScript(bindings, options.bindingsOut, {
-			banner: options.bindingsBanner,
-		})
-	}
-
-	if (options.schemaOut) {
-		await generateSchemaTypeScript(openApi, options.schemaOut)
-	}
-
-	if (options.clientOut) {
-		const bindings = extractClientBindingsFromOpenApi(openApi)
-		writeCreateClientTypeScript(bindings, options.clientOut, {
-			banner: options.clientBanner,
-		})
-	}
-}
+import { writeClientBindingsTypeScript } from '../emit/bindings'
+import { writeCreateClientTypeScript } from '../emit/client'
+import { generateSchemaTypeScript } from '../emit/schema'
+import { extractClientBindingsFromOpenApi } from '../extract/bindings'
+import { loadOpenApi } from '../openapi/load'
+import { findDriftedArtifacts } from './drift'
+import type { CheckArtifactsOptions } from './types'
 
 export async function checkClientArtifacts(
 	options: CheckArtifactsOptions,
@@ -54,7 +30,7 @@ export async function checkClientArtifacts(
 		}
 
 		if (options.bindingsOut) {
-			const generatedBindings = join(temporaryDirectory, 'client-bindings.ts')
+			const generatedBindings = join(temporaryDirectory, 'client-bindings')
 			const bindings = extractClientBindingsFromOpenApi(openApi)
 			writeClientBindingsTypeScript(bindings, generatedBindings, {
 				banner: options.bindingsBanner,
@@ -63,13 +39,13 @@ export async function checkClientArtifacts(
 		}
 
 		if (options.schemaOut) {
-			const generatedSchema = join(temporaryDirectory, 'schema.d.ts')
+			const generatedSchema = join(temporaryDirectory, 'schema.d')
 			await generateSchemaTypeScript(openApi, generatedSchema)
 			artifacts.push({ generated: generatedSchema, tracked: options.schemaOut })
 		}
 
 		if (options.clientOut) {
-			const generatedClient = join(temporaryDirectory, 'create-client.ts')
+			const generatedClient = join(temporaryDirectory, 'create-client')
 			const bindings = extractClientBindingsFromOpenApi(openApi)
 			writeCreateClientTypeScript(bindings, generatedClient, {
 				banner: options.clientBanner,
