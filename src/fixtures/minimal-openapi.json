@@ -1,0 +1,48 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "version": "0.0.1",
+    "title": "Edaya Core API"
+  },
+  "paths": {
+    "/core/entities/schools/list": {
+      "post": {
+        "operationId": "entities.schools.list",
+        "x-edaya-kind": "entity",
+        "x-edaya-entity-key": "schools",
+        "x-edaya-entity-public-name": "schools",
+        "x-edaya-response-schema": "School",
+        "x-edaya-allow-direct-save": true
+      }
+    },
+    "/core/entities/students/list": {
+      "post": {
+        "operationId": "entities.students.list",
+        "x-edaya-kind": "entity",
+        "x-edaya-entity-key": "students",
+        "x-edaya-entity-public-name": "students",
+        "x-edaya-response-schema": "Student",
+        "x-edaya-allow-direct-save": true
+      }
+    },
+    "/core/commands/register-school": {
+      "post": {
+        "operationId": "commands.registerSchool",
+        "x-edaya-kind": "command",
+        "x-edaya-command-key": "registerSchool",
+        "x-edaya-command-public-name": "register-school",
+        "x-edaya-request-schema": "RegisterSchoolRequest",
+        "x-edaya-response-schema": "School"
+      }
+    },
+    "/core/authorization/effective-grants": {
+      "get": {
+        "operationId": "authorization.effectiveGrants",
+        "x-edaya-kind": "authorization",
+        "x-edaya-client-key": "effectiveGrants",
+        "x-edaya-client-path": "authorization/effective-grants",
+        "x-edaya-response-schema": "EffectiveGrantsResponse"
+      }
+    }
+  }
+}

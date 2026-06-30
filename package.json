@@ -1,0 +1,30 @@
+{
+	"name": "@edaya/client-codegen",
+	"type": "module",
+	"version": "0.0.1",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/softilab/edaya-client-codegen.git"
+	},
+	"exports": {
+		".": {
+			"types": "./src/index.ts",
+			"import": "./src/index.ts"
+		}
+	},
+	"bin": {
+		"edaya-codegen": "./src/cli.ts"
+	},
+	"scripts": {
+		"test": "bun test src --dots",
+		"check": "tsc --noEmit",
+		"quality": "bun run check && bun run test"
+	},
+	"dependencies": {
+		"openapi-typescript": "^7.13.0"
+	},
+	"devDependencies": {
+		"@types/bun": "^1.3.14",
+		"typescript": "^6.0.2"
+	}
+}
