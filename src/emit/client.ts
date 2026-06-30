@@ -134,11 +134,11 @@ export function formatCreateClientTypeScript(
 		.join('\n')
 
 	return `${banner}
-import type { BaseEntityResource, DirectSaveEntityResource } from '../entity-resource.ts'
-import type { Transport } from '../transport.ts'
-import { EntityResource } from '../entity-resource.ts'
-import { clientBindings } from './client-bindings.ts'
-import { resolveClientRoutePath } from '../paths.ts'
+import type { BaseEntityResource, DirectSaveEntityResource } from '../entity-resource'
+import type { Transport } from '../transport'
+import { EntityResource } from '../entity-resource'
+import { clientBindings } from './client-bindings'
+import { resolveClientRoutePath } from '../paths'
 
 type SchemaName<TSchemas extends Record<string, unknown>, TName extends string>
   = TName extends keyof TSchemas ? TSchemas[TName] : never
