@@ -4,6 +4,8 @@ export interface ParsedCli {
 	bindingsOut?: string
 	schemaOut?: string
 	clientOut?: string
+	clientDir?: string
+	runtimeVersion?: string
 	openApiOut?: string
 	repoRoot?: string
 	headers: Record<string, string>
@@ -53,6 +55,12 @@ export function parseCli(argv: string[]): ParsedCli {
 				break
 			case '--client-out':
 				parsed.clientOut = readValue()
+				break
+			case '--client-dir':
+				parsed.clientDir = readValue()
+				break
+			case '--runtime-version':
+				parsed.runtimeVersion = readValue()
 				break
 			case '--openapi-out':
 				parsed.openApiOut = readValue()

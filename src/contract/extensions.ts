@@ -16,7 +16,9 @@ export const X_EDAYA_CLIENT_PATH = 'x-edaya-client-path'
 export const X_EDAYA_PATH_PARAMS = 'x-edaya-path-params'
 export const X_EDAYA_BASE_PATH = 'x-edaya-base-path'
 export const X_EDAYA_RESPONSE_IS_ARRAY = 'x-edaya-response-is-array'
+export const X_EDAYA_NAMESPACE_KEY = 'x-edaya-namespace-key'
 
+/** @deprecated Namespace keys are discovered from OpenAPI operations. */
 export const CLIENT_ROUTE_NAMESPACES = [
 	'authorization',
 	'onboarding',
@@ -26,4 +28,7 @@ export const CLIENT_ROUTE_NAMESPACES = [
 	'webhooks',
 ] as const
 
+/** @deprecated Use dynamic namespace keys from ClientBindingsDocument. */
 export type ClientRouteNamespace = typeof CLIENT_ROUTE_NAMESPACES[number]
+
+export const CORE_CLIENT_BINDING_KINDS = ['entity', 'command', 'query', 'namespace'] as const

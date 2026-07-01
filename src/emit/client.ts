@@ -4,9 +4,23 @@ import type {
 	ClientBindingsDocument,
 	ClientNamespaceRouteBinding,
 } from '../contract/bindings'
-import { CLIENT_ROUTE_NAMESPACES } from '../contract/extensions'
-import type { ClientRouteNamespace } from '../contract/extensions'
+import { getNamespaceBindings, getNamespaceKeys } from '../contract/bindings'
 import { DEFAULT_CLIENT_BANNER } from './banners'
+
+export interface CreateClientEmitOptions {
+	banner?: string
+	runtimeImports?: {
+		entityResource: string
+		transport: string
+		paths: string
+	}
+}
+
+const DEFAULT_RUNTIME_IMPORTS = {
+	entityResource: '../runtime/entity-resource',
+	transport: '../runtime/transport',
+	paths: '../runtime/paths',
+}
 
 function capitalize(value: string): string {
 	return value.charAt(0).toUpperCase() + value.slice(1)
@@ -86,7 +100,7 @@ function namespaceMethodImplementation(
 }
 
 function buildNamespaceTypes(
-	namespace: ClientRouteNamespace,
+	namespace: string,
 	routes: Record<string, ClientNamespaceRouteBinding>,
 ): string {
 	const entries = Object.entries(routes)
@@ -102,7 +116,7 @@ function buildNamespaceTypes(
 }
 
 function buildNamespaceImplementation(
-	namespace: ClientRouteNamespace,
+	namespace: string,
 	routes: Record<string, ClientNamespaceRouteBinding>,
 ): string {
 	const entries = Object.entries(routes)
@@ -120,25 +134,27 @@ function buildNamespaceImplementation(
 
 export function formatCreateClientTypeScript(
 	bindings: ClientBindingsDocument,
-	options: { banner?: string } = {},
+	options: CreateClientEmitOptions = {},
 ): string {
 	const banner = options.banner ?? DEFAULT_CLIENT_BANNER
-	const namespaceTypes = CLIENT_ROUTE_NAMESPACES
-		.map(namespace => buildNamespaceTypes(namespace, bindings[namespace]))
+	const runtimeImports = options.runtimeImports ?? DEFAULT_RUNTIME_IMPORTS
+	const namespaceKeys = getNamespaceKeys(bindings)
+	const namespaceTypes = namespaceKeys
+		.map(namespace => buildNamespaceTypes(namespace, getNamespaceBindings(bindings, namespace)))
 		.join('\n\n')
-	const namespaceFields = CLIENT_ROUTE_NAMESPACES
+	const namespaceFields = namespaceKeys
 		.map(namespace => `  ${namespace}: ${capitalize(namespace)}Clients<TSchemas>`)
 		.join('\n')
-	const namespaceAssignments = CLIENT_ROUTE_NAMESPACES
-		.map(namespace => `    ${namespace}: ${buildNamespaceImplementation(namespace, bindings[namespace])},`)
+	const namespaceAssignments = namespaceKeys
+		.map(namespace => `    ${namespace}: ${buildNamespaceImplementation(namespace, getNamespaceBindings(bindings, namespace))},`)
 		.join('\n')
 
 	return `${banner}
-import type { BaseEntityResource, DirectSaveEntityResource } from '../entity-resource'
-import type { Transport } from '../transport'
-import { EntityResource } from '../entity-resource'
+import type { BaseEntityResource, DirectSaveEntityResource } from '${runtimeImports.entityResource}'
+import type { Transport } from '${runtimeImports.transport}'
+import { EntityResource } from '${runtimeImports.entityResource}'
 import { clientBindings } from './client-bindings'
-import { resolveClientRoutePath } from '../paths'
+import { resolveClientRoutePath } from '${runtimeImports.paths}'
 
 type SchemaName<TSchemas extends Record<string, unknown>, TName extends string>
   = TName extends keyof TSchemas ? TSchemas[TName] : never
@@ -225,7 +241,7 @@ ${namespaceAssignments}
 export function writeCreateClientTypeScript(
 	bindings: ClientBindingsDocument,
 	outputPath: string,
-	options: { banner?: string } = {},
+	options: CreateClientEmitOptions = {},
 ): void {
 	mkdirSync(dirname(outputPath), { recursive: true })
 	writeFileSync(outputPath, formatCreateClientTypeScript(bindings, options))

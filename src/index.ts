@@ -1,6 +1,7 @@
 export {
 	CLIENT_BINDINGS_OPENAPI_EXTENSION,
 	CLIENT_ROUTE_NAMESPACES,
+	CORE_CLIENT_BINDING_KINDS,
 	X_EDAYA_ALLOW_DIRECT_SAVE,
 	X_EDAYA_BASE_PATH,
 	X_EDAYA_CLIENT_KEY,
@@ -10,6 +11,7 @@ export {
 	X_EDAYA_ENTITY_KEY,
 	X_EDAYA_ENTITY_PUBLIC_NAME,
 	X_EDAYA_KIND,
+	X_EDAYA_NAMESPACE_KEY,
 	X_EDAYA_QUERY_KEY,
 	X_EDAYA_QUERY_PUBLIC_NAME,
 	X_EDAYA_PATH_PARAMS,
@@ -22,8 +24,16 @@ export type {
 	ClientBindingsDocument,
 	ClientCommandBinding,
 	ClientEntityBinding,
+	ClientNamespaceBindings,
 	ClientNamespaceRouteBinding,
 	ClientQueryBinding,
+	CoreBindingKey,
+} from './contract/bindings'
+export {
+	CORE_BINDING_KEYS,
+	createEmptyClientBindingsDocument,
+	getNamespaceBindings,
+	getNamespaceKeys,
 } from './contract/bindings'
 export type { ClientRouteNamespace } from './contract/extensions'
 export type {
@@ -40,6 +50,14 @@ export type {
 export { findDriftedArtifacts } from './pipeline/drift'
 export { formatClientBindingsTypeScript, writeClientBindingsTypeScript } from './emit/bindings'
 export { formatCreateClientTypeScript, writeCreateClientTypeScript } from './emit/client'
+export {
+	copyRuntimeTemplates,
+	formatClientIndexTypeScript,
+	formatCreateClientTestTypeScript,
+	generateClientDirectory,
+	getClientDirectoryArtifacts,
+	RUNTIME_TEMPLATE_FILES,
+} from './emit/client-dir'
 export { generateSchemaTypeScript } from './emit/schema'
 export { extractClientBindingsFromOpenApi } from './extract/bindings'
 export { checkClientArtifacts, writeOpenApiSnapshot } from './pipeline/check'

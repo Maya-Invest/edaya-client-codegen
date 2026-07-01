@@ -1,4 +1,5 @@
 import process from 'node:process'
+import { join } from 'node:path'
 import { checkClientArtifacts } from '../pipeline/check'
 import { generateClientArtifacts } from '../pipeline/generate'
 import { parseCli } from './parse-args'
@@ -20,9 +21,12 @@ export async function main(): Promise<void> {
 		process.exit(1)
 	}
 
+	const hasLegacyOutputs = Boolean(parsed.bindingsOut || parsed.schemaOut || parsed.clientOut)
+	const hasClientDir = Boolean(parsed.clientDir)
+
 	if (parsed.command === 'generate') {
-		if (!parsed.bindingsOut && !parsed.schemaOut && !parsed.clientOut) {
-			console.error('generate requires at least one of --bindings-out, --schema-out, or --client-out')
+		if (!hasLegacyOutputs && !hasClientDir) {
+			console.error('generate requires --client-dir or at least one of --bindings-out, --schema-out, or --client-out')
 			process.exit(1)
 		}
 
@@ -31,6 +35,8 @@ export async function main(): Promise<void> {
 			bindingsOut: parsed.bindingsOut,
 			schemaOut: parsed.schemaOut,
 			clientOut: parsed.clientOut,
+			clientDir: parsed.clientDir,
+			runtimeVersion: parsed.runtimeVersion,
 			headers: parsed.headers,
 		})
 		console.log('Generated client artifacts updated.')
@@ -40,8 +46,10 @@ export async function main(): Promise<void> {
 	const changed = await checkClientArtifacts({
 		input: parsed.input,
 		bindingsOut: parsed.bindingsOut,
-		schemaOut: parsed.schemaOut,
+		schemaOut: parsed.schemaOut ?? (parsed.clientDir ? join(parsed.clientDir, 'schema.d.ts') : undefined),
 		clientOut: parsed.clientOut,
+		clientDir: parsed.clientDir,
+		runtimeVersion: parsed.runtimeVersion,
 		openApiOut: parsed.openApiOut,
 		repoRoot: parsed.repoRoot,
 		headers: parsed.headers,

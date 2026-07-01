@@ -8,6 +8,8 @@ export interface GenerateArtifactsOptions {
 	bindingsOut?: string
 	schemaOut?: string
 	clientOut?: string
+	clientDir?: string
+	runtimeVersion?: string
 	headers?: Record<string, string>
 	bindingsBanner?: string
 	clientBanner?: string

@@ -1,5 +1,3 @@
-import { CLIENT_ROUTE_NAMESPACES } from './extensions'
-
 export interface ClientEntityBinding {
 	publicName: string
 	schemaName: string
@@ -33,30 +31,42 @@ export type ClientAuthorizationBinding = ClientNamespaceRouteBinding
 
 export type ClientNamespaceBindings = Record<string, ClientNamespaceRouteBinding>
 
+export const CORE_BINDING_KEYS = ['entities', 'commands', 'queries'] as const
+
+export type CoreBindingKey = typeof CORE_BINDING_KEYS[number]
+
 export interface ClientBindingsDocument {
 	entities: Record<string, ClientEntityBinding>
 	commands: Record<string, ClientCommandBinding>
 	queries: Record<string, ClientQueryBinding>
-	authorization: ClientNamespaceBindings
-	onboarding: ClientNamespaceBindings
-	files: ClientNamespaceBindings
-	serviceAccounts: ClientNamespaceBindings
-	public: ClientNamespaceBindings
-	webhooks: ClientNamespaceBindings
+	[namespaceKey: string]:
+		| Record<string, ClientEntityBinding>
+		| Record<string, ClientCommandBinding>
+		| Record<string, ClientQueryBinding>
+		| Record<string, ClientNamespaceRouteBinding>
 }
 
 export function createEmptyClientBindingsDocument(): ClientBindingsDocument {
-	const namespaces = Object.fromEntries(
-		CLIENT_ROUTE_NAMESPACES.map(namespace => [namespace, {}]),
-	) as Pick<
-		ClientBindingsDocument,
-		(typeof CLIENT_ROUTE_NAMESPACES)[number]
-	>
-
 	return {
 		entities: {},
 		commands: {},
 		queries: {},
-		...namespaces,
 	}
+}
+
+export function getNamespaceKeys(bindings: ClientBindingsDocument): string[] {
+	return Object.keys(bindings)
+		.filter(key => !CORE_BINDING_KEYS.includes(key as CoreBindingKey))
+		.sort()
+}
+
+export function getNamespaceBindings(
+	bindings: ClientBindingsDocument,
+	namespace: string,
+): ClientNamespaceBindings {
+	const value = bindings[namespace]
+	if (!value || typeof value !== 'object') {
+		return {}
+	}
+	return value as ClientNamespaceBindings
 }

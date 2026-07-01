@@ -1,7 +1,15 @@
-import { createEmptyClientBindingsDocument } from '../contract/bindings'
+import {
+	CORE_BINDING_KEYS,
+	createEmptyClientBindingsDocument,
+	getNamespaceBindings,
+	type ClientBindingsDocument,
+	type ClientCommandBinding,
+	type ClientEntityBinding,
+	type ClientNamespaceRouteBinding,
+	type ClientQueryBinding,
+} from '../contract/bindings'
 import {
 	CLIENT_BINDINGS_OPENAPI_EXTENSION,
-	CLIENT_ROUTE_NAMESPACES,
 	X_EDAYA_ALLOW_DIRECT_SAVE,
 	X_EDAYA_BASE_PATH,
 	X_EDAYA_CLIENT_KEY,
@@ -11,6 +19,7 @@ import {
 	X_EDAYA_ENTITY_KEY,
 	X_EDAYA_ENTITY_PUBLIC_NAME,
 	X_EDAYA_KIND,
+	X_EDAYA_NAMESPACE_KEY,
 	X_EDAYA_PATH_PARAMS,
 	X_EDAYA_QUERY_KEY,
 	X_EDAYA_QUERY_PUBLIC_NAME,
@@ -18,14 +27,6 @@ import {
 	X_EDAYA_RESPONSE_IS_ARRAY,
 	X_EDAYA_RESPONSE_SCHEMA,
 } from '../contract/extensions'
-import type {
-	ClientBindingsDocument,
-	ClientCommandBinding,
-	ClientEntityBinding,
-	ClientNamespaceRouteBinding,
-	ClientQueryBinding,
-} from '../contract/bindings'
-import type { ClientRouteNamespace } from '../contract/extensions'
 import type { OpenApiDocument, OpenApiOperation } from '../openapi/types'
 
 const HTTP_METHODS = ['get', 'post', 'put', 'patch', 'delete'] as const
@@ -146,8 +147,40 @@ function extractNamespaceRouteBinding(
 	return [key, binding]
 }
 
-function isClientRouteNamespace(kind: unknown): kind is ClientRouteNamespace {
-	return typeof kind === 'string' && CLIENT_ROUTE_NAMESPACES.includes(kind as ClientRouteNamespace)
+function resolveNamespaceName(kind: string, operation: OpenApiOperation): string {
+	if (kind === 'namespace') {
+		return readString(operation, X_EDAYA_NAMESPACE_KEY)
+	}
+	return kind
+}
+
+function isNamespaceKind(kind: unknown): kind is string {
+	return typeof kind === 'string' && kind !== 'entity' && kind !== 'command' && kind !== 'query'
+}
+
+function mergeLegacyBindings(
+	bindings: ClientBindingsDocument,
+	legacy: Partial<ClientBindingsDocument>,
+): ClientBindingsDocument {
+	const merged = { ...bindings }
+
+	for (const [key, value] of Object.entries(legacy)) {
+		if (!value || typeof value !== 'object') {
+			continue
+		}
+		if (CORE_BINDING_KEYS.includes(key as typeof CORE_BINDING_KEYS[number])) {
+			const target = merged[key]
+			if (target && typeof target === 'object') {
+				Object.assign(target, value)
+			}
+			continue
+		}
+		const namespaceBindings = getNamespaceBindings(merged, key)
+		Object.assign(namespaceBindings, value)
+		merged[key] = namespaceBindings
+	}
+
+	return merged
 }
 
 export function extractClientBindingsFromOpenApi(
@@ -178,28 +211,22 @@ export function extractClientBindingsFromOpenApi(
 				bindings.queries[key] = binding
 				continue
 			}
-			if (isClientRouteNamespace(kind)) {
+			if (isNamespaceKind(kind)) {
+				const namespace = resolveNamespaceName(kind, operation)
 				const [key, binding] = extractNamespaceRouteBinding(
 					method.toUpperCase() as ClientNamespaceRouteBinding['method'],
 					operation,
 				)
-				bindings[kind][key] = binding
+				const namespaceBindings = getNamespaceBindings(bindings, namespace)
+				namespaceBindings[key] = binding
+				bindings[namespace] = namespaceBindings
 			}
 		}
 	}
 
 	if (Object.keys(bindings.entities).length === 0 && openApi.info?.[CLIENT_BINDINGS_OPENAPI_EXTENSION]) {
 		const legacy = openApi.info[CLIENT_BINDINGS_OPENAPI_EXTENSION] as Partial<ClientBindingsDocument>
-		return {
-			...createEmptyClientBindingsDocument(),
-			...legacy,
-			authorization: legacy.authorization ?? bindings.authorization,
-			onboarding: legacy.onboarding ?? bindings.onboarding,
-			files: legacy.files ?? bindings.files,
-			serviceAccounts: legacy.serviceAccounts ?? bindings.serviceAccounts,
-			public: legacy.public ?? bindings.public,
-			webhooks: legacy.webhooks ?? bindings.webhooks,
-		}
+		return mergeLegacyBindings(bindings, legacy)
 	}
 
 	if (Object.keys(bindings.entities).length === 0) {

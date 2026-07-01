@@ -1,8 +1,14 @@
-import { resolve } from 'node:path'
+import { mkdtempSync, rmSync } from 'node:fs'
+import { tmpdir } from 'node:os'
+import { join, resolve } from 'node:path'
 import { describe, expect, it } from 'bun:test'
 import { X_EDAYA_KIND } from '../src/contract/extensions'
+import { getNamespaceKeys } from '../src/contract/bindings'
+import { generateClientDirectory, getClientDirectoryArtifacts, RUNTIME_TEMPLATE_FILES } from '../src/emit/client-dir'
 import { extractClientBindingsFromOpenApi } from '../src/extract/bindings'
 import { loadOpenApi } from '../src/openapi/load'
+import { checkClientArtifacts } from '../src/pipeline/check'
+import { generateClientArtifacts } from '../src/pipeline/generate'
 
 const fixturePath = resolve(
 	import.meta.dirname,
@@ -25,9 +31,81 @@ describe('extractClientBindingsFromOpenApi', () => {
 			path: 'authorization/effective-grants',
 			responseSchemaName: 'EffectiveGrantsResponse',
 		})
+		expect(getNamespaceKeys(bindings)).toContain('authorization')
 
 		const listOperation = openApi.paths?.['/core/entities/students/list']?.post
 		expect(listOperation?.[X_EDAYA_KIND]).toBe('entity')
+	})
+
+	it('discovers namespace routes without a hardcoded namespace list', async () => {
+		const openApi = await loadOpenApi(fixturePath)
+		openApi.paths = {
+			...openApi.paths,
+			'/core/reports/summary': {
+				get: {
+					operationId: 'reports.summary',
+					'x-edaya-kind': 'reports',
+					'x-edaya-client-key': 'summary',
+					'x-edaya-client-path': 'reports/summary',
+					'x-edaya-response-schema': 'ReportSummary',
+				},
+			},
+		}
+
+		const bindings = extractClientBindingsFromOpenApi(openApi)
+		expect(getNamespaceKeys(bindings)).toContain('reports')
+		expect(bindings.reports.summary.method).toBe('GET')
+	})
+})
+
+describe('generateClientDirectory', () => {
+	it('emits a self-contained client directory with runtime templates', async () => {
+		const openApi = await loadOpenApi(fixturePath)
+		const bindings = extractClientBindingsFromOpenApi(openApi)
+		const clientDir = mkdtempSync(join(tmpdir(), 'edaya-client-codegen-generate-'))
+
+		try {
+			await generateClientDirectory(openApi, bindings, clientDir, {
+				runtimeVersion: '0.1.0-test',
+			})
+
+			const artifacts = getClientDirectoryArtifacts(clientDir, { includeSchema: true })
+			expect(artifacts.length).toBeGreaterThan(0)
+
+			for (const artifact of artifacts) {
+				expect(Bun.file(artifact).size).toBeGreaterThan(0)
+			}
+
+			expect(RUNTIME_TEMPLATE_FILES.length).toBe(6)
+			const createClient = await Bun.file(join(clientDir, 'generated/create-client.ts')).text()
+			expect(createClient).toContain('../runtime/entity-resource')
+		}
+		finally {
+			rmSync(clientDir, { recursive: true, force: true })
+		}
+	})
+})
+
+describe('checkClientArtifacts with client-dir', () => {
+	it('reports no drift for a freshly generated client directory', async () => {
+		const clientDir = mkdtempSync(join(tmpdir(), 'edaya-client-codegen-check-'))
+
+		try {
+			await generateClientArtifacts({
+				input: fixturePath,
+				clientDir,
+			})
+
+			const changed = await checkClientArtifacts({
+				input: fixturePath,
+				clientDir,
+				repoRoot: resolve(clientDir, '..'),
+			})
+			expect(changed).toEqual([])
+		}
+		finally {
+			rmSync(clientDir, { recursive: true, force: true })
+		}
 	})
 })
 
