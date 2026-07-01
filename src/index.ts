@@ -1,6 +1,5 @@
 export {
 	CLIENT_BINDINGS_OPENAPI_EXTENSION,
-	CLIENT_ROUTE_NAMESPACES,
 	CORE_CLIENT_BINDING_KINDS,
 	X_EDAYA_ALLOW_DIRECT_SAVE,
 	X_EDAYA_BASE_PATH,
@@ -20,7 +19,6 @@ export {
 	X_EDAYA_RESPONSE_SCHEMA,
 } from './contract/extensions'
 export type {
-	ClientAuthorizationBinding,
 	ClientBindingsDocument,
 	ClientCommandBinding,
 	ClientEntityBinding,
@@ -35,7 +33,6 @@ export {
 	getNamespaceBindings,
 	getNamespaceKeys,
 } from './contract/bindings'
-export type { ClientRouteNamespace } from './contract/extensions'
 export type {
 	CheckArtifactsOptions,
 	GenerateArtifactsOptions,

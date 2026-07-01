@@ -26,9 +26,6 @@ export interface ClientNamespaceRouteBinding {
 	responseIsArray?: boolean
 }
 
-/** @deprecated Use ClientNamespaceRouteBinding */
-export type ClientAuthorizationBinding = ClientNamespaceRouteBinding
-
 export type ClientNamespaceBindings = Record<string, ClientNamespaceRouteBinding>
 
 export const CORE_BINDING_KEYS = ['entities', 'commands', 'queries'] as const

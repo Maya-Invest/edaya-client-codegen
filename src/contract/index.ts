@@ -1,6 +1,5 @@
 export {
 	CLIENT_BINDINGS_OPENAPI_EXTENSION,
-	CLIENT_ROUTE_NAMESPACES,
 	X_EDAYA_ALLOW_DIRECT_SAVE,
 	X_EDAYA_BASE_PATH,
 	X_EDAYA_CLIENT_KEY,
@@ -17,9 +16,7 @@ export {
 	X_EDAYA_RESPONSE_IS_ARRAY,
 	X_EDAYA_RESPONSE_SCHEMA,
 } from './extensions'
-export type { ClientRouteNamespace } from './extensions'
 export type {
-	ClientAuthorizationBinding,
 	ClientBindingsDocument,
 	ClientCommandBinding,
 	ClientEntityBinding,
