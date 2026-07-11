@@ -14,4 +14,4 @@ await generateClientArtifacts({
 	schemaOut: resolve(clientDir, 'schema.d.ts'),
 })
 
-console.log(`Generated @edaya/api-client from ${input}`)
+console.log(`Generated @maya-invest/edaya-api-client from ${input}`)

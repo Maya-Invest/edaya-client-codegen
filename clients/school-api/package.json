@@ -1,5 +1,5 @@
 {
-	"name": "@edaya/api-client",
+	"name": "@maya-invest/edaya-api-client",
 	"type": "module",
 	"version": "0.0.0",
 	"description": "Generated Edaya school API client",
@@ -9,6 +9,9 @@
 		"directory": "clients/school-api"
 	},
 	"license": "UNLICENSED",
+	"publishConfig": {
+		"registry": "https://npm.pkg.github.com"
+	},
 	"exports": {
 		".": {
 			"types": "./src/index.ts",
@@ -23,6 +26,9 @@
 	},
 	"files": [
 		"dist",
-		"src/schema.d.ts"
-	]
+		"src"
+	],
+	"scripts": {
+		"build": "tsc -p tsconfig.build.json"
+	}
 }

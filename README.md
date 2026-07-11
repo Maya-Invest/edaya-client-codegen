@@ -94,20 +94,20 @@ await generateClientArtifacts({
 
 | Flag | Output |
 |------|--------|
-| `--bindings-out` | `client-bindings.ts` for `@edaya/api-client` |
+| `--bindings-out` | `client-bindings.ts` for `@maya-invest/edaya-api-client` |
 | `--schema-out` | `schema.d.ts` via `openapi-typescript` |
 | `--client-out` | `create-client.ts` with `createSchoolClient()` |
 
 
-## @edaya/api-client
+## @maya-invest/edaya-api-client (GitHub Packages)
 
 Published school API client generated into [`clients/school-api/`](clients/school-api/).
 
 | Install | Command |
 |---------|---------|
-| npm (staging) | `npm install @edaya/api-client@staging` |
-| npm (production) | `npm install @edaya/api-client@production` |
-| Local path | `"@edaya/api-client": "file:../edaya-client-codegen/clients/school-api"` |
+| GitHub Packages (staging) | `bun add @maya-invest/edaya-api-client@staging` with `.npmrc` → `npm.pkg.github.com` |
+| GitHub Packages (production) | `bun add @maya-invest/edaya-api-client@production` |
+| Local path | `"@maya-invest/edaya-api-client": "file:../edaya-client-codegen/clients/school-api"` |
 
 Local path installs resolve the TypeScript barrel (`src/index.ts`). Published npm tarballs ship compiled ESM from `dist/`.
 
@@ -130,4 +130,4 @@ On merge to `staging` or `main` in **edaya_backend** (when API paths change), `d
 3. Commit + push to the matching branch (`staging` / `main`)
 4. Build `dist/` and `npm publish --tag staging|production`
 
-Requires org secrets on `edaya_backend`: `CODEGEN_REPO_TOKEN`, `NPM_TOKEN`.
+Publish uses `GITHUB_TOKEN` on `edaya_backend`; optional `CODEGEN_REPO_TOKEN` to commit regenerated sources.
