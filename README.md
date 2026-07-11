@@ -97,3 +97,37 @@ await generateClientArtifacts({
 | `--bindings-out` | `client-bindings.ts` for `@edaya/api-client` |
 | `--schema-out` | `schema.d.ts` via `openapi-typescript` |
 | `--client-out` | `create-client.ts` with `createSchoolClient()` |
+
+
+## @edaya/api-client
+
+Published school API client generated into [`clients/school-api/`](clients/school-api/).
+
+| Install | Command |
+|---------|---------|
+| npm (staging) | `npm install @edaya/api-client@staging` |
+| npm (production) | `npm install @edaya/api-client@production` |
+| Local path | `"@edaya/api-client": "file:../edaya-client-codegen/clients/school-api"` |
+
+Local path installs resolve the TypeScript barrel (`src/index.ts`). Published npm tarballs ship compiled ESM from `dist/`.
+
+### Regenerate locally
+
+```sh
+bun run generate:client
+# optional input:
+OPENAPI_INPUT=../edaya_backend/tooling/repo/fixtures/openapi.json bun run generate:client
+bun run build:client
+bun run check:client
+```
+
+### CI publish
+
+On merge to `staging` or `main` in **edaya_backend** (when API paths change), `deploy_push` runs `_publish-api-client.yml`:
+
+1. Export OpenAPI in-process from the merged API (`bun repo openapi export`)
+2. Regenerate `clients/school-api/src` in this repo
+3. Commit + push to the matching branch (`staging` / `main`)
+4. Build `dist/` and `npm publish --tag staging|production`
+
+Requires org secrets on `edaya_backend`: `CODEGEN_REPO_TOKEN`, `NPM_TOKEN`.

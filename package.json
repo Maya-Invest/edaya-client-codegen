@@ -22,7 +22,10 @@
 	"scripts": {
 		"test": "bun test test --dots",
 		"check": "tsc --noEmit",
-		"quality": "bun run check && bun run test"
+		"quality": "bun run check && bun run test",
+		"generate:client": "bun scripts/generate-school-api-client.ts",
+		"check:client": "bun scripts/check-school-api-client.ts",
+		"build:client": "tsc -p clients/school-api/tsconfig.build.json"
 	},
 	"dependencies": {
 		"openapi-typescript": "^7.13.0"

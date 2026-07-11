@@ -8,6 +8,7 @@ node_modules/
 
 # Build / cache
 dist/
+clients/school-api/dist/
 build/
 .turbo/
 *.tsbuildinfo
@@ -33,3 +34,4 @@ pnpm-debug.log*
 !.vscode/settings.json
 !.vscode/extensions.json
 *.sw?
+clients/school-api/bun.lock

@@ -117,6 +117,7 @@ export function getClientDirectoryArtifacts(
 ): string[] {
 	const artifacts = [
 		'index.ts',
+		'openapi.json',
 		'generated/client-bindings.ts',
 		'generated/create-client.ts',
 		'generated/create-client.test.ts',
@@ -155,6 +156,8 @@ export async function generateClientDirectory(
 	)
 
 	writeFileSync(join(clientDir, 'index.ts'), formatClientIndexTypeScript())
+
+	writeFileSync(join(clientDir, 'openapi.json'), JSON.stringify(openApi, null, 2))
 
 	const schemaOut = options.schemaOut ?? join(clientDir, 'schema.d.ts')
 	await generateSchemaTypeScript(openApi, schemaOut)
